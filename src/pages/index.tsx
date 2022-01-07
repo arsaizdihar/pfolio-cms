@@ -4,21 +4,23 @@ import classNames from "classnames";
 import { gql } from "graphql-request";
 import type { GetStaticProps, NextPage } from "next";
 import Head from "next/head";
+import { useRouter } from "next/router";
 import { FC } from "react";
 import TypeWriter from "typewriter-effect";
 import Footer from "~/common/Footer";
 import NavBar from "~/common/NavBar";
 import SocmedLink from "~/common/SocmedLink";
+import { useLocalString } from "~/common/useLocalString";
 import { HERO_ENTRY_ID } from "~/core/constants";
 import { request } from "~/core/contentful";
 import { usePageData } from "~/core/pageData";
 import { HeroData, IndexPageData } from "../types";
 
-export const getStaticProps: GetStaticProps = async ({ preview }) => {
+export const getStaticProps: GetStaticProps = async ({ preview, locale }) => {
   const heroEntry = await request<{ hero: HeroData }>({
     query: gql`
-      query ($id: String!) {
-        hero(id: $id) {
+      query ($id: String!, $locale: String) {
+        hero(id: $id, locale: $locale) {
           titlePrefix
           titles
           description
@@ -38,6 +40,7 @@ export const getStaticProps: GetStaticProps = async ({ preview }) => {
     `,
     variables: {
       id: HERO_ENTRY_ID,
+      locale,
     },
     preview,
   });
@@ -87,7 +90,9 @@ const Hero = () => {
             href="mailto:arsadihar@gmail.com"
           >
             <FontAwesomeIcon icon={faEnvelope} className="text-xl relative" />
-            <span className="relative">CONTACT ME</span>
+            <span className="relative">
+              {useLocalString("CONTACT ME", "KONTAK SAYA")}
+            </span>
           </a>
         </div>
       </div>
@@ -101,6 +106,7 @@ interface HeroHeadingProps {
 }
 
 const HeroHeading: FC<HeroHeadingProps> = ({ titlePrefix, titles }) => {
+  const { locale } = useRouter();
   return (
     <h1
       className={classNames(
@@ -109,27 +115,18 @@ const HeroHeading: FC<HeroHeadingProps> = ({ titlePrefix, titles }) => {
       )}
     >
       <TypeWriter
+        key={locale}
         onInit={(typewriter) => {
           typewriter.pauseFor(200).typeString(titlePrefix).start();
-          setInterval(() => {
-            const elements = document.querySelectorAll(".type-title");
-            if (elements.length > 1) {
-              elements.forEach((e, id) => {
-                if (id < elements.length - 1) e.remove();
-              });
-            }
-            titles.forEach((title) => {
-              const text = `<span class="text-primary group-hover:text-white duration-1000 type-title">${title}</span>`;
-              typewriter
-                .typeString(text)
-                .pauseFor(400)
-                .deleteChars(title.length)
-                .pauseFor(100);
-            });
-          }, 100);
+          titles.forEach((title, idx) => {
+            const text = `<span class="text-primary group-hover:text-white duration-1000 type-title">${title}</span>`;
+            typewriter.typeString(text).pauseFor(400).deleteChars(title.length);
+            if (idx < titles.length - 1) typewriter.pauseFor(100);
+          });
         }}
         options={{
           cursorClassName: "Typewriter__cursor font-normal text-white",
+          loop: true,
         }}
       />
     </h1>

@@ -1,5 +1,6 @@
 import { Disclosure, Transition } from "@headlessui/react";
 import classNames from "classnames";
+import { useRouter } from "next/router";
 import React, { useEffect, useRef, useState } from "react";
 const navigation = [
   {
@@ -20,6 +21,13 @@ const NavBar: React.FC = ({}) => {
       lastScroll = newScroll;
     });
   }, []);
+
+  const router = useRouter();
+  const { locale, pathname, query, asPath } = router;
+
+  const changeLocale = (locale: string) => {
+    router.push({ pathname, query }, asPath, { locale });
+  };
   return (
     <Disclosure
       as="nav"
@@ -32,8 +40,29 @@ const NavBar: React.FC = ({}) => {
         <>
           <div className="bg-black max-w-screen-2xl mx-auto px-2 sm:px-6 lg:px-8 xl:px-16 py-2 relative z-30">
             <div className="relative flex items-center justify-between h-16">
-              <div className="text-primary hover:text-white flex-shrink-0 flex items-center text-2xl font-extrabold select-none duration-300">
-                ARSA
+              <div className="flex-shrink-0 flex items-center text-2xl font-extrabold select-none duration-300 gap-x-2">
+                <button
+                  onClick={() => changeLocale("id")}
+                  className={classNames(
+                    locale === "id"
+                      ? "text-primary"
+                      : "text-white hover:text-primary",
+                    "duration-300"
+                  )}
+                >
+                  ID
+                </button>
+                <button
+                  onClick={() => changeLocale("en-US")}
+                  className={classNames(
+                    locale === "en-US"
+                      ? "text-primary"
+                      : "text-white hover:text-primary",
+                    "duration-300"
+                  )}
+                >
+                  EN
+                </button>
               </div>
               <div className="sm:hidden relative flex items-center">
                 <Disclosure.Button

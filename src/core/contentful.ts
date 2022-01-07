@@ -5,13 +5,13 @@ type RequestParam = {
   variables?: Record<string, any>;
   preview?: boolean;
 };
+const endpoint = `https://graphql.contentful.com/content/v1/spaces/${process.env.CONTENTFUL_SPACE_ID}`;
 
 export function request<T>({
   query,
   variables,
   preview,
 }: RequestParam): Promise<T> {
-  const endpoint = `https://graphql.contentful.com/content/v1/spaces/${process.env.CONTENTFUL_SPACE_ID}`;
   const client = new GraphQLClient(endpoint, {
     headers: {
       authorization: `Bearer ${
