@@ -6,7 +6,8 @@ export type SEO = {
 };
 
 export type Hero = {
-  title: string;
+  titlePrefix: string;
+  titles: Array<string>;
   description: string;
   seo: SEO;
   socmedLinks: Array<SocmedLink>;

@@ -49,20 +49,23 @@ const Hero = () => {
       <div className="max-w-screen-md text-center">
         <h1
           className={classNames(
-            titlePrimary
-              ? "text-primary hover:text-white"
-              : "text-white hover:text-primary",
+            "text-white hover:text-primary",
             "font-extrabold text-5xl mb-8 duration-1000 tracking-wide select-none"
           )}
         >
           <TypeWriter
-            onInit={(typewriter) =>
-              typewriter
-                .pauseFor(200)
-                .typeString(hero.title)
-                .callFunction(() => setTitlePrimary(true))
-                .start()
-            }
+            onInit={(typewriter) => {
+              typewriter.pauseFor(200).typeString(hero.titlePrefix).start();
+              setInterval(() => {
+                hero.titles.forEach((title) =>
+                  typewriter
+                    .typeString(`<span class="text-primary">${title}</span>`)
+                    .pauseFor(400)
+                    .deleteChars(title.length)
+                    .pauseFor(100)
+                );
+              }, 100);
+            }}
             options={{
               cursorClassName: "Typewriter__cursor font-normal text-white",
             }}
