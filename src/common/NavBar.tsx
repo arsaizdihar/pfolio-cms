@@ -1,11 +1,12 @@
 import { Disclosure, Transition } from "@headlessui/react";
+import classNames from "classnames";
 import React, { useEffect, useRef, useState } from "react";
 const navigation = [
   {
     name: "Home",
     scroll: "home",
     hidden: false,
-    href: undefined,
+    href: "body",
   },
 ];
 const NavBar: React.FC = ({}) => {
@@ -20,7 +21,13 @@ const NavBar: React.FC = ({}) => {
     });
   }, []);
   return (
-    <Disclosure as="nav" className={`fixed w-full z-30 transform duration-300`}>
+    <Disclosure
+      as="nav"
+      className={classNames(
+        "fixed w-full z-30 transform duration-300",
+        show ? "translate-y-0" : "-translate-y-full"
+      )}
+    >
       {({ open }) => (
         <>
           <div className="bg-black max-w-screen-2xl mx-auto px-2 sm:px-6 lg:px-8 xl:px-16 py-2 relative z-30">
@@ -72,13 +79,19 @@ const NavBar: React.FC = ({}) => {
               <div className="hidden sm:block sm:ml-6">
                 <div className="flex space-x-4">
                   {navigation.map((item) => (
-                    <a
+                    <button
                       key={item.name}
-                      href={item.href || undefined}
+                      onClick={() => {
+                        if (item.href) {
+                          document
+                            .querySelector(item.href)
+                            ?.scrollIntoView({ behavior: "smooth" });
+                        }
+                      }}
                       className={`px-3 py-2 text-base font-bold select-none cursor-pointer hover:text-white/90 duration-200 tracking-wide`}
                     >
                       {item.name}
-                    </a>
+                    </button>
                   ))}
                 </div>
               </div>
@@ -112,4 +125,4 @@ const NavBar: React.FC = ({}) => {
   );
 };
 
-export default NavBar;
+export default React.memo(NavBar);
