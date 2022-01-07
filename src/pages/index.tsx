@@ -1,25 +1,22 @@
-import { faEnvelope } from "@fortawesome/free-regular-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import classNames from "classnames";
+import AOS from "aos";
+import "aos/dist/aos.css";
 import { gql } from "graphql-request";
 import type { GetStaticProps, NextPage } from "next";
 import Head from "next/head";
-import { useRouter } from "next/router";
-import { FC } from "react";
-import TypeWriter from "typewriter-effect";
+import { useEffect } from "react";
 import Footer from "~/common/Footer";
 import NavBar from "~/common/NavBar";
-import SocmedLink from "~/common/SocmedLink";
-import { useLocalString } from "~/common/useLocalString";
-import { HERO_ENTRY_ID } from "~/core/constants";
+import { HERO_ENTRY_ID, PROFILE_ENTRY_ID } from "~/core/constants";
 import { request } from "~/core/contentful";
 import { usePageData } from "~/core/pageData";
-import { HeroData, IndexPageData } from "../types";
+import Hero from "~/landing/Hero";
+import Profile from "~/landing/Profile";
+import { HeroData, IndexPageData, ProfileData } from "../types";
 
 export const getStaticProps: GetStaticProps = async ({ preview, locale }) => {
-  const heroEntry = await request<{ hero: HeroData }>({
+  const entry = await request<{ hero: HeroData; profile: ProfileData }>({
     query: gql`
-      query ($id: String!, $locale: String) {
+      query ($id: String!, $locale: String, $profileId: String!) {
         hero(id: $id, locale: $locale) {
           titlePrefix
           titles
@@ -36,100 +33,59 @@ export const getStaticProps: GetStaticProps = async ({ preview, locale }) => {
             }
           }
         }
+        profile(id: $profileId, locale: $locale) {
+          title
+          name
+          email
+          birthDate
+          photo {
+            title
+            url
+          }
+        }
       }
     `,
     variables: {
       id: HERO_ENTRY_ID,
       locale,
+      profileId: PROFILE_ENTRY_ID,
     },
     preview,
   });
   return {
     props: {
-      data: {
-        hero: heroEntry.hero,
-      },
+      data: entry,
     },
     revalidate: 10,
   };
 };
 
 const Home: NextPage = () => {
-  const { hero } = usePageData<IndexPageData>();
+  const {
+    hero: { seo },
+  } = usePageData<IndexPageData>();
+
+  useEffect(() => {
+    AOS.init({
+      disable: () => {
+        return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      },
+      duration: 1200,
+      easing: "ease",
+    });
+  }, []);
+
   return (
     <>
       <Head>
-        <title>{hero.seo.title}</title>
-        <meta name="description" content={hero.seo.description} />
+        <title>{seo.title}</title>
+        <meta name="description" content={seo.description} />
       </Head>
       <NavBar />
       <Hero />
+      <Profile />
       <Footer />
     </>
-  );
-};
-
-const Hero = () => {
-  const { hero } = usePageData<IndexPageData>();
-  return (
-    <section
-      className="min-h-screen flex items-center justify-center"
-      id="hero"
-    >
-      <div className="max-w-screen-md text-center px-4">
-        <HeroHeading titlePrefix={hero.titlePrefix} titles={hero.titles} />
-        <p className="font-medium text-lg md:text-xl">{hero.description}</p>
-        <div className="flex gap-x-4 justify-center my-4">
-          {hero.socmedLinksCollection.items.map((item) => (
-            <SocmedLink key={item.iconKey} {...item} />
-          ))}
-        </div>
-        <div className="relative flex justify-center">
-          <a
-            className="btn-swipe flex items-center gap-x-2"
-            href="mailto:arsadihar@gmail.com"
-          >
-            <FontAwesomeIcon icon={faEnvelope} className="text-xl relative" />
-            <span className="relative">
-              {useLocalString("CONTACT ME", "KONTAK SAYA")}
-            </span>
-          </a>
-        </div>
-      </div>
-    </section>
-  );
-};
-
-interface HeroHeadingProps {
-  titlePrefix: string;
-  titles: Array<string>;
-}
-
-const HeroHeading: FC<HeroHeadingProps> = ({ titlePrefix, titles }) => {
-  const { locale } = useRouter();
-  return (
-    <h1
-      className={classNames(
-        "text-white hover:text-primary group",
-        "font-extrabold text-[2rem] md:text-5xl mb-8 duration-1000 tracking-wide select-none leading-snug"
-      )}
-    >
-      <TypeWriter
-        key={locale}
-        onInit={(typewriter) => {
-          typewriter.pauseFor(200).typeString(titlePrefix).start();
-          titles.forEach((title, idx) => {
-            const text = `<span class="text-primary group-hover:text-white duration-1000 type-title">${title}</span>`;
-            typewriter.typeString(text).pauseFor(400).deleteChars(title.length);
-            if (idx < titles.length - 1) typewriter.pauseFor(100);
-          });
-        }}
-        options={{
-          cursorClassName: "Typewriter__cursor font-normal text-white",
-          loop: true,
-        }}
-      />
-    </h1>
   );
 };
 

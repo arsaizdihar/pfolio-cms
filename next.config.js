@@ -5,4 +5,7 @@ module.exports = {
     defaultLocale: "en-US",
     locales: ["en-US", "id"],
   },
+  images: {
+    domains: ["images.ctfassets.net"],
+  },
 };

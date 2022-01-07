@@ -1,13 +1,17 @@
 import { Disclosure, Transition } from "@headlessui/react";
 import classNames from "classnames";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useEffect, useRef, useState } from "react";
 const navigation = [
   {
     name: "Home",
-    scroll: "home",
     hidden: false,
-    href: "body",
+    href: "#hero",
+  },
+  {
+    name: "Profile",
+    href: "#profile",
   },
 ];
 const NavBar: React.FC = ({}) => {
@@ -108,19 +112,13 @@ const NavBar: React.FC = ({}) => {
               <div className="hidden sm:block sm:ml-6">
                 <div className="flex space-x-4">
                   {navigation.map((item) => (
-                    <button
-                      key={item.name}
-                      onClick={() => {
-                        if (item.href) {
-                          document
-                            .querySelector(item.href)
-                            ?.scrollIntoView({ behavior: "smooth" });
-                        }
-                      }}
-                      className={`px-3 py-2 text-base font-bold select-none cursor-pointer hover:text-white/90 duration-200 tracking-wide`}
-                    >
-                      {item.name}
-                    </button>
+                    <Link key={item.name} href={item.href}>
+                      <a
+                        className={`px-3 py-2 text-base font-bold select-none cursor-pointer hover:text-white/90 duration-200 tracking-wide`}
+                      >
+                        {item.name}
+                      </a>
+                    </Link>
                   ))}
                 </div>
               </div>
@@ -138,12 +136,13 @@ const NavBar: React.FC = ({}) => {
             <Disclosure.Panel className={`sm:hidden bg-zinc-900 z-20`}>
               <div className="px-2 pt-2 pb-3 space-y-1">
                 {navigation.map((item) => (
-                  <a
-                    key={item.name}
-                    className={`text-center hover:text-white hover:bg-zinc-800 block px-3 py-2 rounded-md text-base font-bold cursor-pointer`}
-                  >
-                    {item.name}
-                  </a>
+                  <Link key={item.name} href={item.href}>
+                    <a
+                      className={`text-center hover:text-white hover:bg-zinc-800 block px-3 py-2 rounded-md text-base font-bold cursor-pointer`}
+                    >
+                      {item.name}
+                    </a>
+                  </Link>
                 ))}
               </div>
             </Disclosure.Panel>

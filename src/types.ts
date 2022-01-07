@@ -15,6 +15,7 @@ export type HeroData = {
 
 export type IndexPageData = {
   hero: HeroData;
+  profile: ProfileData;
 };
 
 export type SocmedLink = {
@@ -22,4 +23,15 @@ export type SocmedLink = {
   iconKey: SocmedKey;
   color: string;
   link: string;
+};
+
+export type ProfileData = {
+  title: string;
+  name: string;
+  email: string;
+  birthDate: string;
+  photo: {
+    title: string;
+    url: string;
+  };
 };
