@@ -5,16 +5,16 @@ export type SEO = {
   description: string;
 };
 
-export type Hero = {
+export type HeroData = {
   titlePrefix: string;
   titles: Array<string>;
   description: string;
   seo: SEO;
-  socmedLinks: Array<SocmedLink>;
+  socmedLinksCollection: { items: Array<SocmedLink> };
 };
 
 export type IndexPageData = {
-  hero: Hero;
+  hero: HeroData;
 };
 
 export type SocmedLink = {

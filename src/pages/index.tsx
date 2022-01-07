@@ -1,29 +1,50 @@
 import { faEnvelope } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import classNames from "classnames";
+import { gql } from "graphql-request";
 import type { GetStaticProps, NextPage } from "next";
 import Head from "next/head";
 import { FC } from "react";
 import TypeWriter from "typewriter-effect";
-import Footer from "../common/Footer";
-import NavBar from "../common/NavBar";
-import SocmedLink from "../common/SocmedLink";
-import { client } from "../core/contentful";
-import { usePageData } from "../core/pageData";
-import { IndexPageData } from "../types";
+import Footer from "~/common/Footer";
+import NavBar from "~/common/NavBar";
+import SocmedLink from "~/common/SocmedLink";
+import { HERO_ENTRY_ID } from "~/core/constants";
+import { request } from "~/core/contentful";
+import { usePageData } from "~/core/pageData";
+import { HeroData, IndexPageData } from "../types";
 
-export const getStaticProps: GetStaticProps = async () => {
-  const heroEntry = await client.getEntry<any>("7BmWV2UKCoc9iwaPWzWanE");
+export const getStaticProps: GetStaticProps = async ({ preview }) => {
+  const heroEntry = await request<{ hero: HeroData }>({
+    query: gql`
+      query ($id: String!) {
+        hero(id: $id) {
+          titlePrefix
+          titles
+          description
+          seo {
+            title
+            description
+          }
+          socmedLinksCollection {
+            items {
+              name
+              link
+              iconKey
+            }
+          }
+        }
+      }
+    `,
+    variables: {
+      id: HERO_ENTRY_ID,
+    },
+    preview,
+  });
   return {
     props: {
       data: {
-        hero: {
-          ...heroEntry.fields,
-          seo: heroEntry.fields.seo.fields,
-          socmedLinks: heroEntry.fields.socmedLinks.map(
-            (item: any) => item.fields
-          ),
-        },
+        hero: heroEntry.hero,
       },
     },
     revalidate: 10,
@@ -56,7 +77,7 @@ const Hero = () => {
         <HeroHeading titlePrefix={hero.titlePrefix} titles={hero.titles} />
         <p className="font-medium text-lg md:text-xl">{hero.description}</p>
         <div className="flex gap-x-4 justify-center my-4">
-          {hero.socmedLinks.map((item) => (
+          {hero.socmedLinksCollection.items.map((item) => (
             <SocmedLink key={item.iconKey} {...item} />
           ))}
         </div>
