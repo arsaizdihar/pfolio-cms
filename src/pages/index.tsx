@@ -1,3 +1,5 @@
+import { faEnvelope } from "@fortawesome/free-regular-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import classNames from "classnames";
 import type { GetStaticProps, NextPage } from "next";
 import Head from "next/head";
@@ -46,24 +48,31 @@ const Hero = () => {
   const [titlePrimary, setTitlePrimary] = useState(false);
   return (
     <section className="min-h-screen flex items-center justify-center">
-      <div className="max-w-screen-md text-center">
+      <div className="max-w-screen-md text-center px-4">
         <h1
           className={classNames(
-            "text-white hover:text-primary",
-            "font-extrabold text-5xl mb-8 duration-1000 tracking-wide select-none"
+            "text-white hover:text-primary group",
+            "font-extrabold text-[2rem] md:text-5xl mb-8 duration-1000 tracking-wide select-none leading-snug"
           )}
         >
           <TypeWriter
             onInit={(typewriter) => {
               typewriter.pauseFor(200).typeString(hero.titlePrefix).start();
               setInterval(() => {
-                hero.titles.forEach((title) =>
+                const elements = document.querySelectorAll(".type-title");
+                if (elements.length > 1) {
+                  elements.forEach((e, id) => {
+                    if (id < elements.length - 1) e.remove();
+                  });
+                }
+                hero.titles.forEach((title) => {
+                  const text = `<span class="text-primary group-hover:text-white duration-1000 type-title">${title}</span>`;
                   typewriter
-                    .typeString(`<span class="text-primary">${title}</span>`)
+                    .typeString(text)
                     .pauseFor(400)
                     .deleteChars(title.length)
-                    .pauseFor(100)
-                );
+                    .pauseFor(100);
+                });
               }, 100);
             }}
             options={{
@@ -71,11 +80,20 @@ const Hero = () => {
             }}
           />
         </h1>
-        <p className="font-medium text-xl">{hero.description}</p>
+        <p className="font-medium text-lg md:text-xl">{hero.description}</p>
         <div className="flex gap-x-2 justify-center my-4">
           {hero.socmedLinks.map((item) => (
             <SocmedLink key={item.iconKey} {...item} />
           ))}
+        </div>
+        <div className="relative flex justify-center">
+          <a
+            className="btn-swipe flex items-center gap-x-2"
+            href="mailto:arsadihar@gmail.com"
+          >
+            <FontAwesomeIcon icon={faEnvelope} className="text-xl relative" />
+            <span className="relative">CONTACT ME</span>
+          </a>
         </div>
       </div>
     </section>

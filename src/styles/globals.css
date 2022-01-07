@@ -7,3 +7,9 @@
     @apply bg-black font-inter text-font-color;
   }
 }
+
+@layer components {
+  .btn-swipe {
+    @apply before:content-[''] before:absolute before:top-0 before:left-0 before:w-0 before:h-full before:bg-primary before:rounded-md before:transition-all before:duration-300 before:hover:w-full py-2 px-4 transition-all duration-300 relative rounded-md font-bold bg-slate-200 text-black hover:text-white;
+  }
+}
