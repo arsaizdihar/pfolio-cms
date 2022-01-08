@@ -1,22 +1,42 @@
+import { documentToReactComponents } from "@contentful/rich-text-react-renderer";
 import {
   faCalendarAlt,
   faEnvelope,
   IconDefinition,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import classNames from "classnames";
 import Image from "next/image";
 import Link from "next/link";
-import React, { FC } from "react";
+import React, { FC, useEffect, useRef } from "react";
 import { usePageData } from "~/core/pageData";
 import { IndexPageData } from "~/types";
 
 const Profile = () => {
   const { profile } = usePageData<IndexPageData>();
+  const titleRef = useRef<HTMLHeadingElement>(null);
+
+  useEffect(() => {
+    const handler = () => {
+      const isBelow =
+        titleRef.current !== null &&
+        window.scrollY + window.innerHeight / 2 >
+          titleRef.current.getBoundingClientRect().bottom;
+      titleRef.current?.classList.toggle("before:w-full", isBelow);
+      titleRef.current?.classList.toggle("before:hover:w-0", isBelow);
+      titleRef.current?.classList.toggle("before:w-0", !isBelow);
+      titleRef.current?.classList.toggle("before:hover:w-full", !isBelow);
+    };
+    window.addEventListener("scroll", handler);
+
+    return () => window.removeEventListener("scroll", handler);
+  }, []);
   return (
     <section className="border-y border-dark p-8" id="profile">
       <div className="flex justify-center" data-aos="fade-up">
         <h2
-          className="relative text-white font-bold text-4xl my-8 before:absolute before:w-0 before:-bottom-2 before:left-1/2 before:-translate-x-1/2 before:h-1 before:bg-primary before:hover:w-full before:duration-500 before:transition-all select-none cursor-pointer "
+          ref={titleRef}
+          className="relative text-white font-bold text-4xl my-8 before:absolute before:w-0 before:-bottom-2 before:left-1/2 before:-translate-x-1/2 before:h-1 before:bg-primary before:duration-500 before:transition-all select-none cursor-pointer"
           data-text={profile.title}
           onClick={() =>
             document
@@ -44,6 +64,9 @@ const Profile = () => {
           <h3 className="font-medium text-3xl text-center text-white my-4">
             {profile.name}
           </h3>
+          <div className="prose text-center prose-invert">
+            {documentToReactComponents(profile.description.json)}
+          </div>
           <div>
             <Detail
               text={new Date(profile.birthDate).toLocaleDateString(undefined, {
@@ -94,7 +117,9 @@ const LinkWrapper: FC<{ href: string; className?: string }> = ({
 }) => {
   return (
     <Link href={href}>
-      <a className={className}>{children}</a>
+      <a className={classNames(className, "hover:text-secondary duration-100")}>
+        {children}
+      </a>
     </Link>
   );
 };

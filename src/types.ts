@@ -1,3 +1,5 @@
+import { Document } from "@contentful/rich-text-types";
+
 export type SocmedKey = "github" | "twitter" | "instagram" | "linkedin";
 
 export type SEO = {
@@ -28,6 +30,7 @@ export type SocmedLink = {
 export type ProfileData = {
   title: string;
   name: string;
+  description: { json: Document };
   email: string;
   birthDate: string;
   photo: {

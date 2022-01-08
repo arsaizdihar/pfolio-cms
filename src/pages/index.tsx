@@ -30,12 +30,16 @@ export const getStaticProps: GetStaticProps = async ({ preview, locale }) => {
               name
               link
               iconKey
+              color
             }
           }
         }
         profile(id: $profileId, locale: $locale) {
           title
           name
+          description {
+            json
+          }
           email
           birthDate
           photo {
