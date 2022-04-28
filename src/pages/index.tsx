@@ -60,7 +60,6 @@ export const getStaticProps: GetStaticProps = async ({ preview, locale }) => {
     props: {
       data: entry,
     },
-    revalidate: 10,
   };
 };
 

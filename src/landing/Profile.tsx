@@ -9,6 +9,7 @@ import classNames from "classnames";
 import Image from "next/image";
 import Link from "next/link";
 import React, { FC, useEffect, useRef } from "react";
+import { linkOptions } from "~/common/contentful";
 import { usePageData } from "~/core/pageData";
 import { IndexPageData } from "~/types";
 
@@ -65,7 +66,7 @@ const Profile = () => {
             {profile.name}
           </h3>
           <div className="prose text-center prose-invert">
-            {documentToReactComponents(profile.description.json)}
+            {documentToReactComponents(profile.description.json, linkOptions)}
           </div>
           <div>
             <Detail
