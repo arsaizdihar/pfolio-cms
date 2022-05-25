@@ -5,22 +5,21 @@ import { useRouter } from "next/router";
 import React, { FC } from "react";
 import TypeWriter from "typewriter-effect";
 import SocmedLink from "~/common/SocmedLink";
-import { useLocalString } from "~/common/useLocalString";
 import { usePageData } from "~/core/pageData";
-import { IndexPageData } from "~/types";
+import { LandingPageData } from "~/types";
 
 const Hero = () => {
-  const { hero } = usePageData<IndexPageData>();
+  const data = usePageData<LandingPageData>();
   return (
     <section
       className="min-h-screen flex items-center justify-center"
       id="hero"
     >
       <div className="max-w-screen-md text-center px-4">
-        <HeroHeading titlePrefix={hero.titlePrefix} titles={hero.titles} />
-        <p className="font-medium text-lg md:text-xl">{hero.description}</p>
+        <HeroHeading titlePrefix={data.titlePrefix} titles={data.titles} />
+        <p className="font-medium text-lg md:text-xl">{data.description}</p>
         <div className="flex gap-x-4 justify-center my-4">
-          {hero.socmedLinksCollection.items.map((item) => (
+          {data.socmedLinks.map((item) => (
             <SocmedLink key={item.iconKey} {...item} />
           ))}
         </div>
@@ -30,9 +29,7 @@ const Hero = () => {
             href="mailto:arsadihar@gmail.com"
           >
             <FontAwesomeIcon icon={faEnvelope} className="text-xl relative" />
-            <span className="relative">
-              {useLocalString("CONTACT ME", "KONTAK SAYA")}
-            </span>
+            <span className="relative">CONTACT ME</span>
           </a>
         </div>
       </div>

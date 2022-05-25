@@ -1,23 +1,22 @@
-import { Document } from "@contentful/rich-text-types";
-
 export type SocmedKey = "github" | "twitter" | "instagram" | "linkedin";
+
+export type LandingPageData = HeroData &
+  ProfileData & {
+    seo: SEO;
+  };
 
 export type SEO = {
   title: string;
   description: string;
+  image: { url: string };
+  twitterCard: string;
 };
 
 export type HeroData = {
   titlePrefix: string;
   titles: Array<string>;
   description: string;
-  seo: SEO;
-  socmedLinksCollection: { items: Array<SocmedLink> };
-};
-
-export type IndexPageData = {
-  hero: HeroData;
-  profile: ProfileData;
+  socmedLinks: Array<SocmedLink>;
 };
 
 export type SocmedLink = {
@@ -28,13 +27,12 @@ export type SocmedLink = {
 };
 
 export type ProfileData = {
-  title: string;
-  name: string;
-  description: { json: Document };
+  profileTitle: string;
+  profileName: string;
+  profileDescription: string;
   email: string;
   birthDate: string;
   photo: {
-    title: string;
     url: string;
   };
 };

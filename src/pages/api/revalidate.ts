@@ -5,7 +5,7 @@ export default async function handler(
   res: NextApiResponse
 ) {
   if (req.method === "POST") {
-    if (req.headers.secret !== process.env.CONTENTFUL_WEBHOOK_SECRET) {
+    if (req.headers.secret !== process.env.WEBHOOK_SECRET) {
       return res.status(401).json({ error: "Invalid secret" });
     }
     try {

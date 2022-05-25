@@ -1,11 +1,7 @@
 /** @type {import('next').NextConfig} */
 module.exports = {
   reactStrictMode: true,
-  i18n: {
-    defaultLocale: "en-US",
-    locales: ["en-US", "id"],
-  },
   images: {
-    domains: ["images.ctfassets.net"],
+    domains: ["www.datocms-assets.com"],
   },
 };

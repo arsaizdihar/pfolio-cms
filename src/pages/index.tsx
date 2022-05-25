@@ -6,67 +6,55 @@ import Head from "next/head";
 import { useEffect } from "react";
 import Footer from "~/common/Footer";
 import NavBar from "~/common/NavBar";
-import { HERO_ENTRY_ID, PROFILE_ENTRY_ID } from "~/core/constants";
-import { request } from "~/core/contentful";
 import { usePageData } from "~/core/pageData";
+import { request } from "~/core/request";
 import Hero from "~/landing/Hero";
 import Profile from "~/landing/Profile";
-import { HeroData, IndexPageData, ProfileData } from "../types";
+import { LandingPageData } from "../types";
 
-export const getStaticProps: GetStaticProps = async ({ preview, locale }) => {
-  const entry = await request<{ hero: HeroData; profile: ProfileData }>({
+export const getStaticProps: GetStaticProps = async ({ preview }) => {
+  const entry = await request<{ landing: LandingPageData }>({
     query: gql`
-      query ($id: String!, $locale: String, $profileId: String!) {
-        hero(id: $id, locale: $locale) {
+      query {
+        landing {
           titlePrefix
           titles
           description
+          socmedLinks {
+            name
+            link
+            iconKey
+            color
+          }
+          profileTitle
+          profileName
+          profileDescription
+          email
+          photo {
+            url
+          }
           seo {
             title
             description
-          }
-          socmedLinksCollection {
-            items {
-              name
-              link
-              iconKey
-              color
+            image {
+              url
             }
-          }
-        }
-        profile(id: $profileId, locale: $locale) {
-          title
-          name
-          description {
-            json
-          }
-          email
-          birthDate
-          photo {
-            title
-            url
+            twitterCard
           }
         }
       }
     `,
-    variables: {
-      id: HERO_ENTRY_ID,
-      locale,
-      profileId: PROFILE_ENTRY_ID,
-    },
     preview,
   });
   return {
     props: {
-      data: entry,
+      data: entry.landing,
     },
   };
 };
 
 const Home: NextPage = () => {
-  const {
-    hero: { seo },
-  } = usePageData<IndexPageData>();
+  const data = usePageData<LandingPageData>();
 
   useEffect(() => {
     AOS.init({
@@ -81,8 +69,17 @@ const Home: NextPage = () => {
   return (
     <>
       <Head>
-        <title>{seo.title}</title>
-        <meta name="description" content={seo.description} />
+        <title>{data.seo.title}</title>
+        <meta name="description" content={data.seo.description} />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={data.seo.title} />
+        <meta name="twitter:description" content={data.seo.description} />
+        <meta name="twitter:image" content={data.seo.image.url} />
+        <meta name="og:card" content={data.seo.twitterCard} />
+        <meta name="og:title" content={data.seo.title} />
+        <meta name="og:description" content={data.seo.description} />
+        <meta name="og:image" content={data.seo.image.url} />
+        <link rel="icon" href="/favicon.ico" />
       </Head>
       <NavBar />
       <Hero />

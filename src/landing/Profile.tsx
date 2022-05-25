@@ -1,4 +1,3 @@
-import { documentToReactComponents } from "@contentful/rich-text-react-renderer";
 import {
   faCalendarAlt,
   faEnvelope,
@@ -9,12 +8,11 @@ import classNames from "classnames";
 import Image from "next/image";
 import Link from "next/link";
 import React, { FC, useEffect, useRef } from "react";
-import { linkOptions } from "~/common/contentful";
 import { usePageData } from "~/core/pageData";
-import { IndexPageData } from "~/types";
+import { LandingPageData } from "~/types";
 
 const Profile = () => {
-  const { profile } = usePageData<IndexPageData>();
+  const data = usePageData<LandingPageData>();
   const titleRef = useRef<HTMLHeadingElement>(null);
 
   useEffect(() => {
@@ -38,14 +36,14 @@ const Profile = () => {
         <h2
           ref={titleRef}
           className="relative text-white font-bold text-4xl my-8 before:absolute before:w-0 before:-bottom-2 before:left-1/2 before:-translate-x-1/2 before:h-1 before:bg-primary before:duration-500 before:transition-all select-none cursor-pointer"
-          data-text={profile.title}
+          data-text={data.profileTitle}
           onClick={() =>
             document
               .querySelector("#profile")
               ?.scrollIntoView({ behavior: "smooth" })
           }
         >
-          {profile.title}
+          {data.profileTitle}
         </h2>
       </div>
       <div
@@ -54,8 +52,8 @@ const Profile = () => {
       >
         <div className="relative max-h-[400px]">
           <Image
-            src={profile.photo.url}
-            alt={profile.photo.title}
+            src={data.photo.url}
+            alt={data.profileName}
             width={400}
             height={400}
             className="rounded-t-md lg:rounded-t-none lg:rounded-l-md"
@@ -63,14 +61,15 @@ const Profile = () => {
         </div>
         <div className="p-4 flex-grow flex flex-col items-center justify-center">
           <h3 className="font-medium text-3xl text-center text-white my-4">
-            {profile.name}
+            {data.profileName}
           </h3>
-          <div className="prose text-center prose-invert">
-            {documentToReactComponents(profile.description.json, linkOptions)}
-          </div>
+          <div
+            className="prose text-center prose-invert"
+            dangerouslySetInnerHTML={{ __html: data.profileDescription }}
+          ></div>
           <div>
             <Detail
-              text={new Date(profile.birthDate).toLocaleDateString(undefined, {
+              text={new Date(data.birthDate).toLocaleDateString(undefined, {
                 day: "numeric",
                 month: "long",
                 year: "numeric",
@@ -78,9 +77,9 @@ const Profile = () => {
               icon={faCalendarAlt}
             />
             <Detail
-              text={profile.email}
+              text={data.email}
               icon={faEnvelope}
-              href={`mailto:${profile.email}`}
+              href={`mailto:${data.email}`}
             />
           </div>
         </div>

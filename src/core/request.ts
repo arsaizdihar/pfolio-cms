@@ -5,20 +5,18 @@ type RequestParam = {
   variables?: Record<string, any>;
   preview?: boolean;
 };
-const endpoint = `https://graphql.contentful.com/content/v1/spaces/${process.env.CONTENTFUL_SPACE_ID}`;
 
 export function request<T>({
   query,
   variables,
   preview,
 }: RequestParam): Promise<T> {
+  const endpoint = preview
+    ? "https://graphql.datocms.com/preview"
+    : "https://graphql.datocms.com";
   const client = new GraphQLClient(endpoint, {
     headers: {
-      authorization: `Bearer ${
-        preview
-          ? process.env.CONTENTFUL_PREVIEW_ACCESS_TOKEN
-          : process.env.CONTENTFUL_DELIVERY_ACCESS_TOKEN
-      }`,
+      authorization: `Bearer ${process.env.DATOCMS_API_TOKEN}`,
     },
   });
   return client.request(query, variables);
